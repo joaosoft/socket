@@ -1,6 +1,6 @@
 package socket
 
-import "web"
+import "github.com/joaosoft/web"
 
 // ServerConfig ...
 type ServerConfig struct {
