@@ -1,0 +1,16 @@
+{
+  "socket": {
+    "client": {
+      "server_address": "localhost:9001/api/v1",
+      "log": {
+        "level": "info"
+      }
+    },
+    "server": {
+      "address": ":9001",
+      "log": {
+        "level": "info"
+      }
+    }
+  }
+}
