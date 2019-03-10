@@ -2,7 +2,10 @@ package socket
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 
 	"github.com/joaosoft/web"
 
@@ -152,5 +155,17 @@ func (s *Client) Listen(topic, channel string, handler MessageHandler) {
 func (s *Client) Forget(topic, channel string, handler MessageHandler) {
 	if mapChannels, ok := s.listeners[topic]; ok {
 		delete(mapChannels, channel)
+	}
+}
+
+// Forget ...
+func (s *Client) Wait() {
+	termChan := make(chan os.Signal, 1)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
+
+	select {
+	case <-termChan:
+		s.Stop()
+		s.logger.Infof("received term signal")
 	}
 }

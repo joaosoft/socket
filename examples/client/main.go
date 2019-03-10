@@ -28,11 +28,10 @@ func main() {
 		panic(err)
 	}
 
-	if err := client.Unsubscribe("topic_1", "channel_1"); err != nil {
-		panic(err)
-	}
+	// Unsubscribe
+	//if err := client.Unsubscribe("topic_1", "channel_1"); err != nil {
+	//	panic(err)
+	//}
 
-	if err := client.Stop(); err != nil {
-		panic(err)
-	}
+	client.Wait()
 }

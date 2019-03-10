@@ -30,7 +30,7 @@ func (c *clientController) handleNewMessage(ctx *web.Context) error {
 				topic,
 				channel,
 				string(ctx.Request.Body))
-			ctx.Response.JSON(web.StatusOK, &messageAcknowledge{Acknowledge: true, Error: mapChannel(ctx.Request.Body)})
+			ctx.Response.JSON(web.StatusOK, &messageAcknowledge{Acknowledge: true, Errors: []error{mapChannel(ctx.Request.Body)}})
 		}
 	}
 

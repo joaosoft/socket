@@ -26,37 +26,30 @@ func (s *serverController) handleNewMessage(ctx *web.Context) error {
 		channel,
 		string(ctx.Request.Body))
 
+	response := messageAcknowledge{
+		Acknowledge: true,
+	}
+
 	if mapTopic, ok := s.listeners[topic]; ok {
 		if mapChannel, ok := mapTopic[channel]; ok {
+
 			for _, listener := range mapChannel {
 				request, err := s.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/api/v1/new-message/%s/%s", listener.gateway, topic, channel))
 				if err != nil {
-					return ctx.Response.JSON(web.StatusBadRequest, &messageAcknowledge{
-						Acknowledge: true,
-						Error:       err,
-					})
+					response.Errors = append(response.Errors, err)
 				}
 
-				response, err := request.WithBody(ctx.Request.Body, web.ContentTypeApplicationJSON).Send()
+				_, err = request.WithBody(ctx.Request.Body, web.ContentTypeApplicationJSON).Send()
 				if err != nil {
-					return ctx.Response.JSON(web.StatusBadRequest, &messageAcknowledge{
-						Acknowledge: true,
-						Error:       err,
-					})
+					response.Errors = append(response.Errors, err)
 				}
 
-				fmt.Printf("\nserver sending message to client [topic: %s, channel: %s message: %s, gateway: %s]", topic, channel, string(response.Body), listener.gateway)
-
-				return ctx.Response.JSON(web.StatusOK, &messageAcknowledge{
-					Acknowledge: true,
-				})
+				fmt.Printf("\nserver sending message to client [topic: %s, channel: %s message: %s, gateway: %s]", topic, channel, string(ctx.Request.Body), listener.gateway)
 			}
 		}
 	}
 
-	return ctx.Response.JSON(web.StatusOK, &messageAcknowledge{
-		Acknowledge: false,
-	})
+	return ctx.Response.JSON(web.StatusOK, response)
 }
 
 func (s *serverController) handleSubscribe(ctx *web.Context) error {

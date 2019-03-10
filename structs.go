@@ -3,8 +3,8 @@ package socket
 type MessageHandler func(message []byte) error
 
 type messageAcknowledge struct {
-	Acknowledge bool  `json:"acknowledge"`
-	Error       error `json:"error,omitempty"`
+	Acknowledge bool    `json:"acknowledge"`
+	Errors      []error `json:"errors,omitempty"`
 }
 
 type listener struct {
