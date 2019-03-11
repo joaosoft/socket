@@ -61,19 +61,19 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "dd98851e0d4f418b451d921259cfee63f93864dc"
+  revision = "595507b0a4a675ff2b92ad6f8884f74a36a07df2"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/logger"
   packages = ["."]
-  revision = "3cb37169f05a408eca80c27e648861849c1d8449"
+  revision = "183bd5151e65d920b053ec1d7c3149a69dceefaf"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/manager"
   packages = ["."]
-  revision = "2e0055403b3c0b9efc31052f8d9929186c22bad1"
+  revision = "9339e2e09aa8bff3a1d6514be0c977863e11aef4"
 
 [[projects]]
   branch = "master"
