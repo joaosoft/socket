@@ -16,9 +16,9 @@ func (s *Client) Reconfigure(options ...SocketClientOption) {
 }
 
 // WithClientConfiguration ...
-func WithClientConfiguration(config *SocketConfig) SocketClientOption {
+func WithClientConfiguration(config *ClientConfig) SocketClientOption {
 	return func(client *Client) {
-		client.config = config.Client
+		client.config = config
 	}
 }
 

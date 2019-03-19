@@ -16,9 +16,9 @@ func (s *Server) Reconfigure(options ...SocketServerOption) {
 }
 
 // WithServerConfiguration ...
-func WithServerConfiguration(config *SocketConfig) SocketServerOption {
+func WithServerConfiguration(config *ServerConfig) SocketServerOption {
 	return func(server *Server) {
-		server.config = config.Server
+		server.config = config
 	}
 }
 
