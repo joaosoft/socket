@@ -74,12 +74,34 @@ func NewClient(options ...SocketClientOption) (*Client, error) {
 }
 
 // Start ...
-func (s *Client) Start() error {
+func (s *Client) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
+	}
+
+	defer wg.Done()
+
 	return s.pm.Start()
 }
 
 // Stop ...
-func (s *Client) Stop() error {
+func (s *Client) Stop(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
+	}
+
+	defer wg.Done()
+
 	return s.pm.Stop()
 }
 

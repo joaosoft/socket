@@ -65,11 +65,33 @@ func NewServer(options ...SocketServerOption) (*Server, error) {
 }
 
 // Start ...
-func (s *Server) Start() error {
+func (s *Server) Start(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
+	}
+
+	defer wg.Done()
+
 	return s.pm.Start()
 }
 
 // Stop ...
-func (s *Server) Stop() error {
+func (s *Server) Stop(waitGroup ...*sync.WaitGroup) error {
+	var wg *sync.WaitGroup
+
+	if len(waitGroup) == 0 {
+		wg = &sync.WaitGroup{}
+		wg.Add(1)
+	} else {
+		wg = waitGroup[0]
+	}
+
+	defer wg.Done()
+
 	return s.pm.Stop()
 }
