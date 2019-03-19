@@ -9,9 +9,9 @@ import (
 type SocketClientOption func(client *Client)
 
 // Reconfigure ...
-func (s *Client) Reconfigure(options ...SocketClientOption) {
+func (c *Client) Reconfigure(options ...SocketClientOption) {
 	for _, option := range options {
-		option(s)
+		option(c)
 	}
 }
 

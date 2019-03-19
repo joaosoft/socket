@@ -23,6 +23,7 @@ type Client struct {
 	pm            *manager.Manager
 	logger        logger.ILogger
 	mux           sync.Mutex
+	started       bool
 }
 
 // NewClient ...
@@ -74,7 +75,7 @@ func NewClient(options ...SocketClientOption) (*Client, error) {
 }
 
 // Start ...
-func (s *Client) Start(waitGroup ...*sync.WaitGroup) error {
+func (c *Client) Start(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -86,11 +87,17 @@ func (s *Client) Start(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	return s.pm.Start()
+	err := c.pm.Start()
+
+	if err == nil {
+		c.started = true
+	}
+
+	return err
 }
 
 // Stop ...
-func (s *Client) Stop(waitGroup ...*sync.WaitGroup) error {
+func (c *Client) Stop(waitGroup ...*sync.WaitGroup) error {
 	var wg *sync.WaitGroup
 
 	if len(waitGroup) == 0 {
@@ -102,92 +109,102 @@ func (s *Client) Stop(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	return s.pm.Stop()
+	err := c.pm.Stop()
+
+	if err == nil {
+		c.started = false
+	}
+
+	return err
+}
+
+func (c *Client) Started() bool {
+	return c.started
 }
 
 // Subscribe ...
-func (s *Client) Subscribe(topic, channel string) error {
-	request, err := s.client.NewRequest(web.MethodPut, fmt.Sprintf("%s/subscribe/%s/%s", s.config.ServerAddress, topic, channel))
+func (c *Client) Subscribe(topic, channel string) error {
+	request, err := c.client.NewRequest(web.MethodPut, fmt.Sprintf("%c/subscribe/%c/%c", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{s.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
 
 	response, err := request.Send()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\nserver response %s", string(response.Body))
+	fmt.Printf("\nserver response %c", string(response.Body))
 
 	return nil
 }
 
 // Unsubscribe ...
-func (s *Client) Unsubscribe(topic, channel string) error {
-	request, err := s.client.NewRequest(web.MethodDelete, fmt.Sprintf("%s/unsubscribe/%s/%s", s.config.ServerAddress, topic, channel))
+func (c *Client) Unsubscribe(topic, channel string) error {
+	request, err := c.client.NewRequest(web.MethodDelete, fmt.Sprintf("%c/unsubscribe/%c/%c", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{s.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
 
 	response, err := request.Send()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\nserver response %s", string(response.Body))
+	fmt.Printf("\nserver response %c", string(response.Body))
 
 	return nil
 }
 
 // Publish ...
-func (s *Client) Publish(topic, channel string, message []byte) error {
-	request, err := s.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/new-message/%s/%s", s.config.ServerAddress, topic, channel))
+func (c *Client) Publish(topic, channel string, message []byte) error {
+	request, err := c.client.NewRequest(web.MethodPost, fmt.Sprintf("%c/new-message/%c/%c", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{s.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
 
 	response, err := request.WithBody(message, web.ContentTypeApplicationJSON).Send()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("\nserver response %s", string(response.Body))
+	fmt.Printf("\nserver response %c", string(response.Body))
 
 	return nil
 }
 
 // Listen ...
-func (s *Client) Listen(topic, channel string, handler MessageHandler) {
-	mapChannels, ok := s.listeners[topic]
+func (c *Client) Listen(topic, channel string, handler MessageHandler) {
+	mapChannels, ok := c.listeners[topic]
 	if !ok {
 		mapChannels = make(map[string]MessageHandler)
-		s.listeners[topic] = mapChannels
+		c.listeners[topic] = mapChannels
 	}
 
 	mapChannels[channel] = handler
 }
 
 // Forget ...
-func (s *Client) Forget(topic, channel string, handler MessageHandler) {
-	if mapChannels, ok := s.listeners[topic]; ok {
+func (c *Client) Forget(topic, channel string, handler MessageHandler) {
+	if mapChannels, ok := c.listeners[topic]; ok {
 		delete(mapChannels, channel)
 	}
 }
 
 // Forget ...
-func (s *Client) Wait() {
+func (c *Client) Wait() {
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1)
 
 	select {
 	case <-termChan:
-		s.Stop()
-		s.logger.Infof("received term signal")
+		c.Stop()
+		c.logger.Infof("received term signal")
 	}
 }

@@ -19,6 +19,7 @@ type Server struct {
 	pm            *manager.Manager
 	logger        logger.ILogger
 	mux           sync.Mutex
+	started       bool
 }
 
 // NewServer ...
@@ -77,7 +78,13 @@ func (s *Server) Start(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	return s.pm.Start()
+	err := s.pm.Start()
+
+	if err == nil {
+		s.started = true
+	}
+
+	return err
 }
 
 // Stop ...
@@ -93,5 +100,15 @@ func (s *Server) Stop(waitGroup ...*sync.WaitGroup) error {
 
 	defer wg.Done()
 
-	return s.pm.Stop()
+	err := s.pm.Stop()
+
+	if err == nil {
+		s.started = false
+	}
+
+	return err
+}
+
+func (s *Server) Started() bool {
+	return s.started
 }
