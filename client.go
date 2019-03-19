@@ -124,7 +124,7 @@ func (c *Client) Started() bool {
 
 // Subscribe ...
 func (c *Client) Subscribe(topic, channel string) error {
-	request, err := c.client.NewRequest(web.MethodPut, fmt.Sprintf("%c/subscribe/%c/%c", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodPut, fmt.Sprintf("%s/subscribe/%s/%s", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
@@ -136,14 +136,14 @@ func (c *Client) Subscribe(topic, channel string) error {
 		return err
 	}
 
-	fmt.Printf("\nserver response %c", string(response.Body))
+	fmt.Printf("\nserver response %s", string(response.Body))
 
 	return nil
 }
 
 // Unsubscribe ...
 func (c *Client) Unsubscribe(topic, channel string) error {
-	request, err := c.client.NewRequest(web.MethodDelete, fmt.Sprintf("%c/unsubscribe/%c/%c", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodDelete, fmt.Sprintf("%s/unsubscribe/%s/%s", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
@@ -155,14 +155,14 @@ func (c *Client) Unsubscribe(topic, channel string) error {
 		return err
 	}
 
-	fmt.Printf("\nserver response %c", string(response.Body))
+	fmt.Printf("\nserver response %s", string(response.Body))
 
 	return nil
 }
 
 // Publish ...
 func (c *Client) Publish(topic, channel string, message []byte) error {
-	request, err := c.client.NewRequest(web.MethodPost, fmt.Sprintf("%c/new-message/%c/%c", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/new-message/%s/%s", c.config.ServerAddress, topic, channel))
 	if err != nil {
 		return err
 	}
@@ -174,7 +174,7 @@ func (c *Client) Publish(topic, channel string, message []byte) error {
 		return err
 	}
 
-	fmt.Printf("\nserver response %c", string(response.Body))
+	fmt.Printf("\nserver response %s", string(response.Body))
 
 	return nil
 }
