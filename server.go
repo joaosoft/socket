@@ -60,7 +60,7 @@ func NewServer(options ...SocketServerOption) (*Server, error) {
 	service.server = webServer.GetClient().(*web.Server)
 	service.initController()
 
-	service.pm.AddWeb("api_web", webServer)
+	service.pm.AddWeb("api_web_socket_server", webServer)
 
 	return service, nil
 }
