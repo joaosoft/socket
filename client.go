@@ -124,12 +124,12 @@ func (c *Client) Started() bool {
 
 // Subscribe ...
 func (c *Client) Subscribe(topic, channel string) error {
-	request, err := c.client.NewRequest(web.MethodPut, fmt.Sprintf("%s/subscribe/%s/%s", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodPut, fmt.Sprintf("%s/subscribe/%s/%s", c.config.ServerAddress, topic, channel), web.ContentTypeApplicationJSON, nil)
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.Config().Address})
 
 	response, err := request.Send()
 	if err != nil {
@@ -143,12 +143,12 @@ func (c *Client) Subscribe(topic, channel string) error {
 
 // Unsubscribe ...
 func (c *Client) Unsubscribe(topic, channel string) error {
-	request, err := c.client.NewRequest(web.MethodDelete, fmt.Sprintf("%s/unsubscribe/%s/%s", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodDelete, fmt.Sprintf("%s/unsubscribe/%s/%s", c.config.ServerAddress, topic, channel), web.ContentTypeApplicationJSON, nil)
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.Config().Address})
 
 	response, err := request.Send()
 	if err != nil {
@@ -162,14 +162,14 @@ func (c *Client) Unsubscribe(topic, channel string) error {
 
 // Publish ...
 func (c *Client) Publish(topic, channel string, message []byte) error {
-	request, err := c.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/new-message/%s/%s", c.config.ServerAddress, topic, channel))
+	request, err := c.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/new-message/%s/%s", c.config.ServerAddress, topic, channel), web.ContentTypeApplicationJSON, nil)
 	if err != nil {
 		return err
 	}
 
-	request.SetHeader(HeaderGatewayKey, []string{c.server.GetAddress()})
+	request.SetHeader(HeaderGatewayKey, []string{c.server.Config().Address})
 
-	response, err := request.WithBody(message, web.ContentTypeApplicationJSON).Send()
+	response, err := request.WithBody(message).Send()
 	if err != nil {
 		return err
 	}
@@ -207,4 +207,8 @@ func (c *Client) Wait() {
 		c.Stop()
 		c.logger.Infof("received term signal")
 	}
+}
+
+func (c *Client) Config() *ClientConfig {
+	return c.config
 }

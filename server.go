@@ -112,3 +112,7 @@ func (s *Server) Stop(waitGroup ...*sync.WaitGroup) error {
 func (s *Server) Started() bool {
 	return s.started
 }
+
+func (s *Server) Config() *ServerConfig {
+	return s.config
+}
