@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"socket"
+	"github.com/joaosoft/socket"
 )
 
 func main() {

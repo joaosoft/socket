@@ -1,7 +1,7 @@
 package main
 
 import (
-	"socket"
+	"github.com/joaosoft/socket"
 )
 
 func main() {
