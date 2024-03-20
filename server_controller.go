@@ -34,12 +34,12 @@ func (s *serverController) handleNewMessage(ctx *web.Context) error {
 		if mapChannel, ok := mapTopic[channel]; ok {
 
 			for _, listener := range mapChannel {
-				request, err := s.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/api/v1/new-message/%s/%s", listener.gateway, topic, channel))
+				request, err := s.client.NewRequest(web.MethodPost, fmt.Sprintf("%s/api/v1/new-message/%s/%s", listener.gateway, topic, channel), web.ContentTypeApplicationJSON, nil)
 				if err != nil {
 					response.Errors = append(response.Errors, err)
 				}
 
-				_, err = request.WithBody(ctx.Request.Body, web.ContentTypeApplicationJSON).Send()
+				_, err = request.WithBody(ctx.Request.Body).Send()
 				if err != nil {
 					response.Errors = append(response.Errors, err)
 				}
